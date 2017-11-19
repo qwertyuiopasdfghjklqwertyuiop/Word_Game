@@ -25,10 +25,10 @@ int main(const int argc, const char ** argv) {
     }
   }
   
-  for(typename std::list<std::string>::iterator iter = validWords.begin() ; iter != validWords.end() ; iter++) 
+  for(typename std::list<std::string>::iterator iter = validWords.begin() ; iter != validWords.end() ; ) 
   {
     output << *iter;
-    if(iter != validWords.end()--)
+    if(iter++ != validWords.end())
       output << '\n';
   }
   
