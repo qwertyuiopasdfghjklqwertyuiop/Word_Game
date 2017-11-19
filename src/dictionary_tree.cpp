@@ -12,7 +12,7 @@ bool Dictionary::LetterNode::newLetter( char letter, bool word )
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Dictionary::LetterNode* Dictionary::LetterNode::getNextLetter( char letter )
+Dictionary::LetterNode* Dictionary::LetterNode::getNextLetter( char letter ) const
 {
   return this->children_[ toupper(letter) - 'A' ].get();
 }
@@ -30,7 +30,7 @@ Dictionary::Dictionary( std::string dictionary )
 {
   this->root_.reset( new LetterNode );
 
-  if( dictionary.length() > 0 );
+  if( dictionary.length() > 0 )
   {
     std::ifstream dict_stream(dictionary);
     this->load_dictionary( dict_stream );
@@ -39,7 +39,7 @@ Dictionary::Dictionary( std::string dictionary )
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-bool Dictionary::isWord( std::string word )
+bool Dictionary::isWord( std::string word ) const
 {
   Dictionary::LetterNode* letter = this->root_.get();
   for(int i = 0; i < word.length(); i++)

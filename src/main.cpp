@@ -5,6 +5,12 @@
 
 
 int main() {
+  try {
+  Dictionary dict("test");
+  }
+  catch( const std::exception& e ) {
+    std::cout << "Exception: " << e.what() << std::endl;
+  }
 
 
 
