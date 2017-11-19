@@ -39,7 +39,7 @@ private:
 
   // Constructor
 public:
-  Dictionary(std::string dictionary = "");
+  Dictionary( std::string dictionary = "");
 
   // Accessors
   bool isWord( std::string word ) const;

@@ -26,15 +26,14 @@ bool Dictionary::LetterNode::isValidLetter( char letter )
 
 //==============================================================================
 
-Dictionary::Dictionary( std::string dictionary )
+Dictionary::Dictionary(std::string dictionary )
 {
   this->root_.reset( new LetterNode );
 
-  if( dictionary.length() > 0 )
-  {
-    std::ifstream dict_stream(dictionary);
-    this->load_dictionary( dict_stream );
-  }
+  if( dictionary.length() <= 0 )
+    dictionary = "../resources/dictionaries/DEFAULT_DICTIONARY.txt";
+  std::ifstream dict_stream(dictionary);
+  this->load_dictionary( dict_stream );
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -44,13 +43,15 @@ bool Dictionary::isWord( std::string word ) const
   Dictionary::LetterNode* letter = this->root_.get();
   for(int i = 0; i < word.length(); i++)
   {
-    if( !LetterNode::isValidLetter(word[i]))
+    if( !isalpha(word[i]))
       return false;
     if( !letter )
       return false;
 
     letter = letter->getNextLetter( word[i] );
   }
+  if(!letter)
+    return false;
   return letter->isWord();
 }
 
@@ -62,7 +63,7 @@ void Dictionary::load_dictionary( std::ifstream& dict_stream )
     throw Dictionary::no_dict_stream();
 
   std::string buffer;
-  if(dict_stream)
+  while(dict_stream)
   {
     getline( dict_stream, buffer );
     if( dict_stream )
