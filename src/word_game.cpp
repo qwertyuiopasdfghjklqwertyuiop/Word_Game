@@ -1,17 +1,38 @@
 #include "word_game.h"
 
-WordGame::WordGame( std::string dictionary, int letSize ) : dict_(dictionary), score_(0)
+WordGame::WordGame( std::string dictionary, int letSize ) : score_(0) , dict_(dictionary) 
 {
   this->letters_ = genRandomString(letSize);
 }
 
-int WordGame::playRound()
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void WordGame::playRound()
 {
+  std::string userInput;
+  getline(std::cin, userInput);
+  int points = getWordScore(userInput); 
+
+  if(user_history_.isWord( userInput ))
+  {
+    std::cout << "You used that word already.  ";
+    points *= -1/4;
+  }
+  else if( !this->dict_.isWord(userInput) )
+  {
+    std::cout << "That is not a word.  ";
+    points *= -1/2;
+  }
+  else if( this->dict_.isWord(userInput) )
+    std::cout << "You made a word!  ";
+  else
+    throw invalid_user_input();
+
+  this->score_ += points;
+
 }
 
-int submitWord(std::string submission)
-{
-}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 std::set<std::string> WordGame::everyWordCombination(std::string letters)
 {
@@ -30,6 +51,7 @@ std::set<std::string> WordGame::everyWordCombination(std::string letters)
       for(std::string permutation : everyWordCombination(remaining))
       {
         myset.insert( letters[k] + permutation );
+        myset.insert( permutation );
       }
     }
   }
@@ -37,17 +59,56 @@ std::set<std::string> WordGame::everyWordCombination(std::string letters)
   return myset;
 }
 
-void WordGame::getMaxPossibleScore(const WordGame& game, std::vector<std::string>& correct_answers, int& x)
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+void WordGame::getMaxPossibleScore(const WordGame& game, std::list<std::string>& correct_answers, int& x)
 {
-  WordGame perfect_game(game);
   correct_answers.clear();
   x = 0;
   
-  for(std::string iter : WordGame::everyWordCombination(perfect_game.letters_))
-    if(perfect_game.dict_.isWord(iter))
-      x += perfect_game.submitWord(iter);
+  for(const std::string& iter : WordGame::everyWordCombination(game.letters_))
+    if(game.dict_.isWord(iter))
+    {
+      x += game.getWordScore(iter);
+      correct_answers.push_back(iter);
+    }
 }
 
-std::string genRandomString(int size)
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+std::string WordGame::genRandomString(int size)
 {
+  std::string retVal = "";
+
+  for( int i=0 ; i < size/2; i++ )
+    retVal += WordGame::vowels[ rand() % WordGame::vowels.length() ];
+  for( int i=0; i < size; i++ )
+    retVal += WordGame::consonants[ rand() % WordGame::consonants.length() ];
+
+  for( int i=0; i < retVal.size(); i++ )
+    std::swap( retVal[i], retVal[rand() % retVal.size()] );
+
+  return retVal;
 }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int WordGame::getWordScore(std::string word)
+{
+  int score = 0;
+  for(const char& let : word)
+  {
+    if( WordGame::vowels.find( let ) != std::string::npos )
+      score += 1;
+    else if ( WordGame::consonants.find( let ) != std::string::npos )
+      score += 2;
+    else
+      throw invalid_word();
+  }
+  return score;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+const std::string WordGame::vowels="aeiou";
+const std::string WordGame::consonants="bcdfghjklmnpqrstvwxyz";

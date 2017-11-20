@@ -1,24 +1,16 @@
-#include <iostream>
-#include <fstream>
-
-#include "dictionary_tree.h"
 #include "word_game.h"
+#include "high_score.h"
 
 
-int main() {
-  try {
-  Dictionary dict("error");
-  }
-  catch( const std::exception& e ) {
-    std::cout << "Exception: " << e.what() << std::endl;
-  }
+int main(const int argc, const char ** argv) {
+  const int NUMBER_LETTERS = 5;
+  std::string DICTIONARY = "";
+  if( argc == 2 ) 
+    DICTIONARY = argv[1];
 
-  std::string test = "abc";
-  std::set<std::string>  myset = WordGame::everyWordCombination(test);
-
-  for(std::string cur : myset)
-    std::cout << cur << std::endl;
+  WordGame(DICTIONARY, NUMBER_LETTERS);
 
 
-    return 0;
+
+  return 0;
 }
