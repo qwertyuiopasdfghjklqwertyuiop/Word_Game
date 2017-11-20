@@ -6,7 +6,7 @@
 
 int main() {
   try {
-  Dictionary dict;
+  Dictionary dict("error");
   }
   catch( const std::exception& e ) {
     std::cout << "Exception: " << e.what() << std::endl;
