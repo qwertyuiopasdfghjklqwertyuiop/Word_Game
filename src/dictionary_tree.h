@@ -40,6 +40,7 @@ private:
   // Constructor
 public:
   Dictionary( std::string dictionary = "");
+  Dictionary( const Dictionary& copy );
 
   // Accessors
   bool isWord( std::string word ) const;
