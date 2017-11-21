@@ -9,7 +9,7 @@ HighScore::HighScore( int num_to_track, std::string location ): numToTrack_(num_
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-HighScore::~HighScore() throw()
+HighScore::~HighScore()
 {
   if( this->names_.size() != this->points_.size() )
     throw NUMBER_NAMES_AND_POINTS_NOT_EQUAL();
@@ -123,7 +123,10 @@ std::ostream& operator<<(std::ostream& out, HighScore& hScore)
       if(k < NAME_MAX_LENGTH && k < nameLength) 
         out << (*nameIter)[k];
       else if( k == LINE_LENGTH - scoreLength )
+      {
         out << *scoreIter << '\n';
+        break;
+      }
       else
         out << ' ';
     }

@@ -15,7 +15,7 @@ private:
   // Constructor
 public:
   HighScore(int num_to_track, std::string location = "");
-  ~HighScore() throw();
+  ~HighScore();
 
   // Mutators
   bool newScore(const std::string& name, const int& score);
@@ -46,7 +46,7 @@ public:
 
 };
 
-std::ostream& operator<<(std::ostream& out, HighScore& hScore);
+//std::ostream& operator<<(std::ostream& out, HighScore& hScore);
 
 #endif
 
