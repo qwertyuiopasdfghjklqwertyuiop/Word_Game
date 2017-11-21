@@ -1,4 +1,4 @@
-#include "word_game.h"
+#include "./Includes/word_game.h"
 
 WordGame::WordGame( std::string dictionary, int letSize ) : score_(0) , dict_(dictionary) 
 {

@@ -1,4 +1,4 @@
-#include "high_score.h"
+#include "./Includes/high_score.h"
 
 HighScore::HighScore( int num_to_track, std::string location ): numToTrack_(num_to_track), 
                                                                managedFile_(location)
@@ -9,7 +9,7 @@ HighScore::HighScore( int num_to_track, std::string location ): numToTrack_(num_
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-HighScore::~HighScore()
+HighScore::~HighScore() throw()
 {
   if( this->names_.size() != this->points_.size() )
     throw NUMBER_NAMES_AND_POINTS_NOT_EQUAL();
@@ -21,8 +21,8 @@ HighScore::~HighScore()
 
 bool HighScore::newScore(const std::string& name, const int& score)
 {
-  std::list<std::string>::iterator nameIter = this->names_.begin();
-  std::list<int>::iterator scoreIter = this->points_.begin();
+  typename std::list<std::string>::iterator nameIter = this->names_.begin();
+  typename std::list<int>::iterator scoreIter = this->points_.begin();
 
   for( ; nameIter != this->names_.end() && scoreIter != this->points_.end() ;
         scoreIter++, nameIter++)
@@ -73,6 +73,7 @@ void HighScore::load_scores(std::ifstream& iStream)
         else
           this->points_.push_back(std::stoi( buffer ));
       }
+      counter++;
     }
   }
   catch(...)
@@ -103,19 +104,19 @@ void HighScore::write_scores(std::ofstream& oStream)
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-std::ostream& HighScore::operator<<(std::ostream& out)
+std::ostream& operator<<(std::ostream& out, HighScore& hScore)
 {
   const int LINE_LENGTH = 24;
   const int NAME_MAX_LENGTH = 12;
 
-  std::list<std::string>::iterator nameIter = this->names_.begin();
-  std::list<int>::iterator scoreIter = this->points_.begin();
+  typename std::list<std::string>::iterator nameIter = hScore.names_.begin();
+  typename std::list<int>::iterator scoreIter = hScore.points_.begin();
 
-  for( int i = 0; i < this->numToTrack_; i++, nameIter++, scoreIter++ )
+  for( int i = 0; i < hScore.numToTrack_; i++, nameIter++, scoreIter++ )
   {
     int nameLength = nameIter->length();
-    int scoreLength=0;
-    for(int score = *scoreIter,scoreLength = 1; score >= 10; score /= 10, scoreLength++){;}
+    int scoreLength=1;
+    for(int score = *scoreIter; score >= 10; score /= 10, scoreLength++){;}
 
     for (int k = 0; k < LINE_LENGTH; k++)
     {
