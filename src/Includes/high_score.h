@@ -2,15 +2,25 @@
 #define _high_score_h
 
 #include <fstream>
-#include <list>
+#include <map>
 
 class HighScore {
+  // Compare function
+private:
+  struct compare { 
+    bool operator()( const int& x, const int& y ) { return y<x; }
+  };
+
   // Members
 private:
-  std::list<std::string> names_;
-  std::list<int> points_;
+  std::multimap<int,std::string,HighScore::compare> scores_;
   int numToTrack_;
   std::string managedFile_;
+
+  // Static variables
+private:
+  static int LINE_PRINT_LENGTH;
+  static int NAME_MAX_PRINT_LENGTH;
 
   // Constructor
 public:
@@ -18,16 +28,20 @@ public:
   ~HighScore();
 
   // Mutators
+public:
   bool newScore(const std::string& name, const int& score);
+  static void SET_LINE_PRINT_LENGTH(int x) { LINE_PRINT_LENGTH = x; }
+  static void SET_NAME_MAX_PRINT_LENGTH(int x) { NAME_MAX_PRINT_LENGTH = x;}
 
   // Accessors
-  int getLowestScore();
+public:
+  int getLowestScore() const;
 
   // Helpers
 private:
   void load_scores(std::ifstream& iStream);
   void write_scores(std::ofstream& oStream);
-
+  
   // Operators
 public:
   friend std::ostream& operator<<(std::ostream& out, HighScore& hScore);
@@ -45,8 +59,6 @@ public:
   };
 
 };
-
-//std::ostream& operator<<(std::ostream& out, HighScore& hScore);
 
 #endif
 

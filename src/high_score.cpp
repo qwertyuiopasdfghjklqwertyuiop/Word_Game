@@ -11,8 +11,6 @@ HighScore::HighScore( int num_to_track, std::string location ): numToTrack_(num_
 
 HighScore::~HighScore()
 {
-  if( this->names_.size() != this->points_.size() )
-    throw NUMBER_NAMES_AND_POINTS_NOT_EQUAL();
   std::ofstream oStream(this->managedFile_);
   this->write_scores(oStream);
 }
@@ -21,59 +19,54 @@ HighScore::~HighScore()
 
 bool HighScore::newScore(const std::string& name, const int& score)
 {
-  typename std::list<std::string>::iterator nameIter = this->names_.begin();
-  typename std::list<int>::iterator scoreIter = this->points_.begin();
-
-  for( ; nameIter != this->names_.end() && scoreIter != this->points_.end() ;
-        scoreIter++, nameIter++)
-  {
-    if( score >= *scoreIter )
-    {
-      this->names_.insert(nameIter,name);
-      this->points_.insert(scoreIter,score);
-      return true;
-    }
-  }
-  return false;
+  if( this->getLowestScore() > score )
+    return false;
+  
+  this->scores_.insert( std::pair<int,std::string>(score,name) );
+  return true;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-int HighScore::getLowestScore()
+int HighScore::getLowestScore() const
 {
-  std::list<int>::iterator scoreIter = this->points_.begin();
-  for(int k = 0; scoreIter != this->points_.end() && k < numToTrack_; scoreIter++, k++)
+  std::multimap< int, std::string >::const_iterator iter = this->scores_.cend();
+  int counter = this->scores_.size();
+
+  for( ; iter != this->scores_.cbegin() && counter > 0; counter--,iter-- )
     ;
-  return *scoreIter;
+
+  if( counter == 0 ) return 0;
+  return iter->first;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void HighScore::load_scores(std::ifstream& iStream)
 {
-  if( !iStream.is_open()) // File Does Not Exist 
+  // File Does Not Exist 
+  if( !iStream.is_open())
     for(int k = 0; k < this->numToTrack_; k++)
-    {
-      this->names_.push_back("NULL");
-      this->points_.push_back(0);
-    }
+      this->scores_.insert( std::pair<int,std::string>(0,"NULL") );
 
   // Load in file
   try
   {
-    int counter = 0;
     while(iStream)
     {
-      std::string buffer; 
-      getline(iStream, buffer);
-      if(iStream)
+      std::string buffer;
+      int pointBuffer;
+      std::string nameBuffer; 
+      for(int k = 0; k < 2; k++)
       {
-        if( counter % 2 == 0 )
-          this->names_.push_back(buffer);
+        getline(iStream, buffer);
+        if(!iStream) goto HighScore__load_scores__FILL_IN; // escape once file is done
+        if(k==0)
+          nameBuffer = buffer;
         else
-          this->points_.push_back(std::stoi( buffer ));
+          pointBuffer = std::stoi(buffer);
       }
-      counter++;
+      this->scores_.insert( std::pair<int,std::string>(pointBuffer,nameBuffer) );
     }
   }
   catch(...)
@@ -82,56 +75,50 @@ void HighScore::load_scores(std::ifstream& iStream)
   }
 
 
+  HighScore__load_scores__FILL_IN:
   // Fill in remaining space
-  while(this->names_.size() < this->numToTrack_ && this->points_.size() <this->numToTrack_)
-  {
-    this->names_.push_back("NULL");
-    this->points_.push_back(0);
-  }
+  while(this->scores_.size() < this->numToTrack_)
+    this->scores_.insert( std::pair<int,std::string>(0,"NULL") );
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void HighScore::write_scores(std::ofstream& oStream)
 {
-  std::list<std::string>::iterator nameIter = this->names_.begin();
-  std::list<int>::iterator scoreIter = this->points_.begin();
-
-  // "*scoreIter > 0" condition is to prevent a bunch of NULLS being written to file
-  for( ; nameIter != this->names_.end() && scoreIter != this->points_.end() && *scoreIter > 0; nameIter++, scoreIter++ )
-    oStream << *nameIter << '\n' << *scoreIter << '\n';
+  std::multimap<int,std::string>::const_iterator iter = this->scores_.cbegin();
+  for( ; iter != this->scores_.cend() && iter->first > 0; iter++ )
+    oStream << iter->second << '\n' << iter->first << '\n';
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 std::ostream& operator<<(std::ostream& out, HighScore& hScore)
 {
-  const int LINE_LENGTH = 24;
-  const int NAME_MAX_LENGTH = 12;
+  std::multimap<int,std::string>::const_iterator iter = hScore.scores_.cbegin();
 
-  typename std::list<std::string>::iterator nameIter = hScore.names_.begin();
-  typename std::list<int>::iterator scoreIter = hScore.points_.begin();
-
-  for( int i = 0; i < hScore.numToTrack_; i++, nameIter++, scoreIter++ )
+  for(int k = 0; k < hScore.numToTrack_ && iter != hScore.scores_.cend() ;k++, iter++)
   {
-    int nameLength = nameIter->length();
-    int scoreLength=1;
-    for(int score = *scoreIter; score >= 10; score /= 10, scoreLength++){;}
+    int scoreLength = 1;
+    for(int score = iter->first; score >= 10; score /= 10)
+      scoreLength++;
 
-    for (int k = 0; k < LINE_LENGTH; k++)
+    for(int i = 0; i < HighScore::LINE_PRINT_LENGTH; i++)
     {
-      if(k < NAME_MAX_LENGTH && k < nameLength) 
-        out << (*nameIter)[k];
-      else if( k == LINE_LENGTH - scoreLength )
+      if(i < HighScore::NAME_MAX_PRINT_LENGTH && i < iter->second.length())
+        out << iter->second[i];
+      else if(scoreLength == HighScore::LINE_PRINT_LENGTH - i)
       {
-        out << *scoreIter << '\n';
+        out << iter->first << '\n';
         break;
       }
       else
         out << ' ';
     }
   }
-
   return out;
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+int HighScore::LINE_PRINT_LENGTH = 24;
+int HighScore::NAME_MAX_PRINT_LENGTH = 12;

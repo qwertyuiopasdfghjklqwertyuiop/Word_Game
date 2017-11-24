@@ -1,5 +1,5 @@
-#include "./Includes/word_game.h"
-#include "./Includes/high_score.h"
+#include "word_game.h"
+#include "high_score.h"
 
 
 int main(const int argc, const char ** argv) {
