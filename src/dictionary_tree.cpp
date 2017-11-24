@@ -30,8 +30,6 @@ Dictionary::Dictionary(std::string dictionary )
 {
   this->root_.reset( new LetterNode );
 
-  if( dictionary.length() <= 0 )
-    dictionary = "../resources/dictionaries/DEFAULT_DICTIONARY.txt";
   std::ifstream dict_stream(dictionary);
   this->load_dictionary( dict_stream );
 }
