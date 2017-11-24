@@ -2,6 +2,7 @@
 
 WordGame::WordGame( std::string dictionary, int letSize ) : score_(0) , dict_(dictionary) 
 {
+  srand(time(NULL));
   this->letters_ = genRandomString(letSize);
 }
 
