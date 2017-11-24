@@ -39,7 +39,7 @@ Dictionary::Dictionary(std::string dictionary )
 bool Dictionary::isWord( std::string word ) const
 {
   Dictionary::LetterNode* letter = this->root_.get();
-  for(int i = 0; i < word.length(); i++)
+  for(unsigned i = 0; i < word.length(); i++)
   {
     if( !isalpha(word[i]))
       return false;
@@ -74,12 +74,12 @@ void Dictionary::load_dictionary( std::ifstream& dict_stream )
 
 bool Dictionary::addWord( std::string word )
 {
-  for( int i = 0; i < word.length(); i++ )
+  for( unsigned i = 0; i < word.length(); i++ )
     if( !isalpha(word[i]) )
       return false;
 
   LetterNode* letter = this->root_.get();
-  for( int i = 0; i < word.length(); i++ )
+  for( unsigned i = 0; i < word.length(); i++ )
   {
     letter->newLetter( word[i] );
     letter = letter->getNextLetter( word[i] );

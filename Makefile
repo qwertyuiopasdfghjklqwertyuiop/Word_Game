@@ -1,7 +1,7 @@
 CC = clang
 INCLUDE = ./src/Includes/
 SOURCE = ./src/*cpp
-CFLAGS = -lpthread -std=c++14 -lstdc++  -Wall -lm -pedantic -I $(INCLUDE)
+CFLAGS = -lpthread -std=c++14 -lstdc++ -Wall -lm -pedantic -I $(INCLUDE)
 TARGETDIRECTORY = ./build/
 TARGET = Word_Game
 

@@ -77,7 +77,7 @@ void HighScore::load_scores(std::ifstream& iStream)
 
   HighScore__load_scores__FILL_IN:
   // Fill in remaining space
-  while(this->scores_.size() < this->numToTrack_)
+  while(this->scores_.size() < (unsigned) this->numToTrack_)
     this->scores_.insert( std::pair<int,std::string>(0,"NULL") );
 }
 
@@ -96,13 +96,13 @@ std::ostream& operator<<(std::ostream& out, HighScore& hScore)
 {
   std::multimap<int,std::string>::const_iterator iter = hScore.scores_.cbegin();
 
-  for(int k = 0; k < hScore.numToTrack_ && iter != hScore.scores_.cend() ;k++, iter++)
+  for(unsigned k = 0; k < hScore.numToTrack_ && iter != hScore.scores_.cend() ;k++, iter++)
   {
     int scoreLength = 1;
     for(int score = iter->first; score >= 10; score /= 10)
       scoreLength++;
 
-    for(int i = 0; i < HighScore::LINE_PRINT_LENGTH; i++)
+    for(unsigned i = 0; i < HighScore::LINE_PRINT_LENGTH; i++)
     {
       if(i < HighScore::NAME_MAX_PRINT_LENGTH && i < iter->second.length())
         out << iter->second[i];

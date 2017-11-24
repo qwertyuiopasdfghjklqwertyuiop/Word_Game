@@ -14,7 +14,7 @@ void WordGame::playRound()
   getline(std::cin, userInput);
   int points = getWordScore(userInput); 
 
-  if(user_history_.isWord( userInput ))
+  if(this->user_history_.isWord( userInput ))
   {
     std::cout << "You used that word already.  ";
     points *= -1/4;
@@ -25,7 +25,10 @@ void WordGame::playRound()
     points *= -1/2;
   }
   else if( this->dict_.isWord(userInput) )
+  {
     std::cout << "You made a word!  ";
+    this->user_history_.addWord(userInput);
+  }
   else
     throw invalid_user_input();
 
@@ -79,15 +82,19 @@ void WordGame::getMaxPossibleScore(const WordGame& game, std::list<std::string>&
 
 std::string WordGame::genRandomString(int size)
 {
+  std::string str = "";
   std::string retVal = "";
 
   for( int i=0 ; i < size/2; i++ )
-    retVal += WordGame::vowels[ rand() % WordGame::vowels.length() ];
+    str += WordGame::vowels[ rand() % WordGame::vowels.length() ];
   for( int i=0; i < size; i++ )
-    retVal += WordGame::consonants[ rand() % WordGame::consonants.length() ];
+    str += WordGame::consonants[ rand() % WordGame::consonants.length() ];
 
-  for( int i=0; i < retVal.size(); i++ )
-    std::swap( retVal[i], retVal[rand() % retVal.size()] );
+  for( int i=0; i < str.size(); i++ )
+    std::swap( str[i], str[rand() % str.size()] );
+
+  for( int i = 0; i < size; i++ )
+    retVal += str[i];
 
   return retVal;
 }
